@@ -97,8 +97,6 @@ function saveDraft() {
     document.execCommand('insertText', false, ' ')
 }
 
-
-
 document.querySelector('[debug-id="dock-item-home"]').click()
 var g_agent_name = returnName()
 var g_phoneNumber = returnPhone()
