@@ -53,10 +53,9 @@ setInterval(replaceCaseId, 500)
 document.addEventListener('click', function (e) {
   let mySlot = e.target.closest('[data-opens-details="true"]')
   if (mySlot) {
-    let appointmentButton = document.querySelector('[aria-label="Connect Appointments"]')
+    let appointmentButton = document.querySelectorAll('[aria-label="Connect Appointments"]')[1]
     if (checkHidenAppointment()) {
       simulateClick(appointmentButton)
     }
   }
 })
-
