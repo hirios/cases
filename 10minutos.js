@@ -1,27 +1,31 @@
 // https://stackoverflow.com/questions/5525071/how-to-wait-until-an-element-exists
 
 function waitForElemente(selector) {
-    return new Promise(resolve => {
+    return new Promise(resolve=>{
         if (document.querySelector(selector)) {
             return resolve(document.querySelector(selector));
         }
 
-        const observer = new MutationObserver(mutations => {
+        const observer = new MutationObserver(mutations=>{
             if (document.querySelector(selector)) {
                 resolve(document.querySelector(selector));
                 observer.disconnect();
             }
-        });
+        }
+        );
 
         observer.observe(document.body, {
             childList: true,
             subtree: true
         });
-    });
+    }
+    );
 }
 
 function g_Appointment() {
-    let dateTime = Array.from(document.querySelectorAll('cuf-form-field')).filter(function (e) { return e.innerText.includes('Time') })[0].innerText.split('\n')[1]
+    let dateTime = Array.from(document.querySelectorAll('cuf-form-field')).filter(function(e) {
+        return e.innerText.includes('Time')
+    })[0].innerText.split('\n')[1]
     dateTime = new Date(dateTime)
     let date = dateTime.toLocaleDateString()
     let time = dateTime.toLocaleTimeString().split(':').slice(0, 2).join(':')
@@ -30,16 +34,15 @@ function g_Appointment() {
 
 function returnName() {
     document.querySelector('img[class*="photo"]').click()
-    setTimeout(function () {
+    setTimeout(function() {
         g_agent_name = document.querySelector("profile-details > div > div.name").innerText
     }, 300)
     return g_agent_name
 }
 
 function returnPhone() {
-    if (document.querySelector('[aria-label="View hidden phone number"]') && document.querySelector('[aria-label="View hidden phone number"]').click()) {
-    }
-    setTimeout(function () {
+    if (document.querySelector('[aria-label="View hidden phone number"]') && document.querySelector('[aria-label="View hidden phone number"]').click()) {}
+    setTimeout(function() {
         g_phoneNumber = document.querySelector('[debugid="pii-phone-value"]').innerText.replace(' ', '')
     }, 1000)
     return g_phoneNumber
@@ -52,36 +55,42 @@ function returnTemplate() {
 // Adiciona o email do cliente como destinatário
 function setCustumerEmail() {
     document.querySelector('span[class*="button-text"]').click()
-    setTimeout(function () {
-        Array.from(document.querySelectorAll('span[class*="label"]')).filter(function (e) {
+    setTimeout(function() {
+        Array.from(document.querySelectorAll('span[class*="label"]')).filter(function(e) {
             return e.innerText === 'Customer'
         })[0].click()
     }, 500)
 }
 
 function emailInMenu() {
-    waitForElemente('[role="menu"]').then((elm) => {
+    waitForElemente('[role="menu"]').then((elm)=>{
         console.log('[+] create email 1')
-        elm.dispatchEvent(new Event('focus', { 'bubbles': true }))
-    });
+        elm.dispatchEvent(new Event('focus',{
+            'bubbles': true
+        }))
+    }
+    );
 
-    waitForElemente('[aria-label="Create new email"]').then((elm) => {
+    waitForElemente('[aria-label="Create new email"]').then((elm)=>{
         console.log('[+] create email 2')
         elm.click()
-    });
+    }
+    );
 }
 
 // Altera o email para o email do Techincal Solutions
 function technicalSolutions() {
-    waitForElemente('[buttoncontent][class*="address"]').then((elm) => {
+    waitForElemente('[buttoncontent][class*="address"]').then((elm)=>{
         console.log('[+] techincal')
         elm.click()
-    });
+    }
+    );
 
-    waitForElemente('[id="email-address-id--technical-solutions@google.com"]').then((elm) => {
+    waitForElemente('[id="email-address-id--technical-solutions@google.com"]').then((elm)=>{
         console.log('[+] techincal 2')
         elm.click()
-    });
+    }
+    );
 }
 
 // Retorna o conteúdo do email a ser editado
@@ -91,7 +100,7 @@ function myCase() {
 
 // Salva a edição realizada
 function saveDraft() {
-    Array.from(document.querySelectorAll('[contenteditable="true"]')).filter(function (e) {
+    Array.from(document.querySelectorAll('[contenteditable="true"]')).filter(function(e) {
         return e.matches('[aria-label="Email body"]')
     })[0].focus()
     document.execCommand('insertText', false, ' ')
@@ -105,13 +114,14 @@ var g_client_name = document.querySelector('title').innerText.split(' ')[1]
 var g_website = Array.from(document.querySelectorAll('[href*="google"][target="_blank"]'))[0].innerText
 //var g_website = Array.from(document.querySelectorAll('cuf-form-field')).filter(function (e) { return e.innerText.includes('Website') })[0].innerText.split('\n')[1]
 var g_appointment = g_Appointment()
-var g_tasks = Array.from(document.querySelectorAll('cuf-form-field')).filter(function (e) { return e.innerText.includes('Tasks') })[0].querySelector('div[class*="form-value"]').innerText.split('\n').join(', ')
-
+var g_tasks = Array.from(document.querySelectorAll('cuf-form-field')).filter(function(e) {
+    return e.innerText.includes('Tasks')
+})[0].innerText.split('\n').slice(1,3).join(', ')
 
 setCustumerEmail()
-setTimeout(function () {
+setTimeout(function() {
     emailInMenu()
-    setTimeout(function () {
+    setTimeout(function() {
         var g_template = returnTemplate()
         technicalSolutions()
         console.log(g_agent_name)
