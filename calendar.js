@@ -25,7 +25,7 @@ function replaceCaseId() {
     let caseId = document.querySelector('[data-show-working-location-actions="true"]').parentElement.innerText.split('caso ')[1].split('\n')[0]
     let cases = `<a href="https://cases.connect.corp.google.com/#/case/${caseId}" target="_blank">${caseId}</a>`
     if (!textBody.innerHTML.includes(cases)) {
-      textBody.innerHTML = escapeHTMLPolicy.createHTML(textBody.innerHTML.replaceAll('código ' + caseId, 'código ' + cases))
+      textBody.innerHTML = escapeHTMLPolicy.createHTML(textBody.innerHTML.replaceAll('caso de código ' + caseId, 'caso de código ' + cases))
     }
   }
 }
