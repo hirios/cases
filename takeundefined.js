@@ -4,7 +4,7 @@ var g_tasks = 'undefined';
 var g_website = 'undefined';
 var g_appointment = 'undefined';
 
-function sleep(ms) {
+async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms * 1000));
 }
 
