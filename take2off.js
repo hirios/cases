@@ -23,7 +23,8 @@ function setCustumerEmail() {
 }
 
 function emailInMenu() {
-    document.querySelector('[role="menu"]').dispatchEvent(new Event('focus', { 'bubbles': true }))
+    let menu = document.querySelector('[role="menu"]') || document.querySelector('[aria-label="Create a write card"]')
+    menu.dispatchEvent(new Event('focus', { 'bubbles': true }))
     setTimeout(function() {
       document.querySelector('[aria-label="Create new email"]').click()
     }, 500)
