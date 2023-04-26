@@ -8,7 +8,7 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms * 1000));
 }
 
-function waitForElemente(selector) {
+async function waitForElemente(selector) {
     return new Promise(resolve=>{
         if (document.querySelector(selector)) {
             return resolve(document.querySelector(selector));
