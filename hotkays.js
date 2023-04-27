@@ -3,23 +3,33 @@ async function sleep(ms) {
   }
 
 async function waitForElemente(selector) {
-    return new Promise(resolve => {
+    return new Promise(resolve=>{
         if (document.querySelector(selector)) {
             return resolve(document.querySelector(selector));
         }
-        const observer = new MutationObserver(mutations => {
+
+        const observer = new MutationObserver(mutations=>{
             if (document.querySelector(selector)) {
                 resolve(document.querySelector(selector));
                 observer.disconnect();
             }
         }
         );
+
         observer.observe(document.body, {
             childList: true,
             subtree: true
         });
     }
     );
+}
+
+async function setLanguage(language) {
+  document.querySelector('[aria-label="Locale"]').dispatchEvent(new Event('focus', { bubbles: true }))
+  await waitForElemente('[aria-label="Locale"] material-select-dropdown-item ~ material-select-dropdown-item').then(async () => {
+    let option = Array.from(document.querySelectorAll('material-select-dropdown-item')).find(e => e.innerHTML.includes(language))
+    option.click();
+  })
 }
 
 async function sendTemplate(hotKay) {
@@ -63,4 +73,7 @@ async function sendTemplate(hotKay) {
 
 }
 
-sendTemplate('ts as new')
+
+setLanguage('Portuguese (Brazil)').then(() => {
+  sendTemplate('ts as new')
+})
