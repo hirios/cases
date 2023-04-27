@@ -63,19 +63,11 @@ function setCustumerEmail() {
 }
 
 function emailInMenu() {
-    waitForElemente('[role="menu"]').then((elm)=>{
-        console.log('[+] create email 1')
-        elm.dispatchEvent(new Event('focus',{
-            'bubbles': true
-        }))
-    }
-    );
-
-    waitForElemente('[aria-label="Create new email"]').then((elm)=>{
-        console.log('[+] create email 2')
-        elm.click()
-    }
-    );
+    let menu = document.querySelector('[role="menu"]') || document.querySelector('[aria-label="Create a write card"]')
+    menu.dispatchEvent(new Event('focus', { 'bubbles': true }))
+    setTimeout(function() {
+      document.querySelector('[aria-label="Create new email"]').click()
+    }, 500)
 }
 
 // Altera o email para o email do Techincal Solutions
