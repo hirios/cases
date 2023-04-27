@@ -22,13 +22,6 @@ async function waitForElemente(selector) {
     );
 }
 
-function saveDraft() {
-    Array.from(document.querySelectorAll('[contenteditable="true"]')).filter(function (e) {
-      return e.matches('[aria-label="Email body"]');
-    })[0].focus();
-    document.execCommand('insertText', false, ' ');
-  }
-
 async function sendTemplate(hotKay) {
     let menu = document.querySelector('[role="menu"]') || document.querySelector('[aria-label="Create a write card"]')
     menu.dispatchEvent(new Event('focus', { 'bubbles': true }))
@@ -37,12 +30,12 @@ async function sendTemplate(hotKay) {
     await waitForElemente('[aria-label="Create new email"]').then(async (botaoEmail) => {
         botaoEmail.click()
 
-    // Remove trechos do email
+    // Remove trechos do email padrão
     }).then(async () => {
-        await waitForElemente('[id="email-body-content-top-content"]').then(async (textoDesnecessario) => {
+        await waitForElemente('#email-body-content').then(async () => {
             await sleep(500)
-            textoDesnecessario.querySelectorAll('*').forEach(e => e.remove());
-            textoDesnecessario.textContent = ''
+            const email = document.querySelectorAll('#email-body-content');
+            email[email.length - 1].innerText = '';
         })
 
     // Depois de clicado aguarda o botão do CR aparecer e clica nele
@@ -71,4 +64,3 @@ async function sendTemplate(hotKay) {
 }
 
 sendTemplate('ts as new')
-saveDraft()
