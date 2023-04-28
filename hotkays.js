@@ -1,22 +1,22 @@
 const verboseCase = true
 
 function print(string) {
-  if (verboseCase) {
-    console.log(string)
-  }
-} 
+    if (verboseCase) {
+        console.log(string)
+    }
+}
 
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
+}
 
 async function waitForElemente(selector) {
-    return new Promise(resolve=>{
+    return new Promise(resolve => {
         if (document.querySelector(selector)) {
             return resolve(document.querySelector(selector));
         }
 
-        const observer = new MutationObserver(mutations=>{
+        const observer = new MutationObserver(mutations => {
             if (document.querySelector(selector)) {
                 resolve(document.querySelector(selector));
                 observer.disconnect();
@@ -33,27 +33,27 @@ async function waitForElemente(selector) {
 }
 
 async function setLanguage(language) {
-  print('[+] Setando linguagem...');
-  let outFocus = document.querySelector('[aria-label="Locale"]').dispatchEvent(new Event('focus', { bubbles: true }));
-  if (outFocus) {
-    print('[+] Case Languge setado focus')
-    print('[+] Aguardando opções de linguagens');
-    await waitForElemente('[aria-label="Locale"] material-select-dropdown-item ~ material-select-dropdown-item').then(async () => {
-      let option = Array.from(document.querySelectorAll('material-select-dropdown-item')).find(e => e.innerHTML.includes(language));
-      if (option) {
-          option.click();
-          await sleep(1000).then(function() {
-              if (document.querySelector('[aria-label="Locale"]').value === language) {
-                  print('[+] Linguagem setada com sucesso')
-              } 
-              else {
-                  print('[-] Error ao setar linguagem')
-                  throw new Error('[-] Error ao setar linguagem');
-              }
-            })
-      }
-    })
-};
+    print('[+] Setando linguagem...');
+    let outFocus = document.querySelector('[aria-label="Locale"]').dispatchEvent(new Event('focus', { bubbles: true }));
+    if (outFocus) {
+        print('[+] Case Languge setado focus')
+        print('[+] Aguardando opções de linguagens');
+        await waitForElemente('[aria-label="Locale"] material-select-dropdown-item ~ material-select-dropdown-item').then(async () => {
+            let option = Array.from(document.querySelectorAll('material-select-dropdown-item')).find(e => e.innerHTML.includes(language));
+            if (option) {
+                option.click();
+                await sleep(1000).then(function () {
+                    if (document.querySelector('[aria-label="Locale"]').value === language) {
+                        print('[+] Linguagem setada com sucesso')
+                    }
+                    else {
+                        print('[-] Error ao setar linguagem')
+                        throw new Error('[-] Error ao setar linguagem');
+                    }
+                })
+            }
+        })
+    };
 }
 
 async function sendTemplate(hotKay) {
@@ -64,7 +64,7 @@ async function sendTemplate(hotKay) {
     await waitForElemente('[aria-label="Create new email"]').then(async (botaoEmail) => {
         botaoEmail.click()
 
-    // Remove trechos do email padrão
+        // Remove trechos do email padrão
     }).then(async () => {
         await waitForElemente('#email-body-content').then(async () => {
             await sleep(500)
@@ -72,7 +72,7 @@ async function sendTemplate(hotKay) {
             email[email.length - 1].innerText = '';
         })
 
-    // Depois de clicado aguarda o botão do CR aparecer e clica nele
+        // Depois de clicado aguarda o botão do CR aparecer e clica nele
     }).then(async () => {
         await waitForElemente('[aria-label="Insert canned response"][role="button"][animated="true"][aria-disabled="false"]').then(async (botaoCR) => {
             botaoCR.click()
@@ -84,9 +84,9 @@ async function sendTemplate(hotKay) {
             }).then(async () => {
                 await waitForElemente('search-panel input[aria-owns]').then(async (searchInput) => {
                     searchInput.value = hotKay
-                    document.execCommand('insertText', false, ' ')                    
+                    document.execCommand('insertText', false, ' ')
                 })
-                
+
             }).then(async () => {
                 console.log('VEIO ATÉ AQUI')
                 await waitForElemente('dynamic-component[class*="dynamic-item"]:nth-child(1)').then(async (matchCR) => {
@@ -99,9 +99,9 @@ async function sendTemplate(hotKay) {
 }
 
 setLanguage('Portuguese (Brazil)').then(() => {
-  sendTemplate('ts as resched1')
+    sendTemplate('ts as resched1')
 }))
-          console.log('DEU CERTO')
+console.log('DEU CERTO')
           })
     }
   })
@@ -115,7 +115,7 @@ async function sendTemplate(hotKay) {
     await waitForElemente('[aria-label="Create new email"]').then(async (botaoEmail) => {
         botaoEmail.click()
 
-    // Remove trechos do email padrão
+        // Remove trechos do email padrão
     }).then(async () => {
         await waitForElemente('#email-body-content').then(async () => {
             await sleep(500)
@@ -123,7 +123,7 @@ async function sendTemplate(hotKay) {
             email[email.length - 1].innerText = '';
         })
 
-    // Depois de clicado aguarda o botão do CR aparecer e clica nele
+        // Depois de clicado aguarda o botão do CR aparecer e clica nele
     }).then(async () => {
         await waitForElemente('[aria-label="Insert canned response"][role="button"][animated="true"][aria-disabled="false"]').then(async (botaoCR) => {
             botaoCR.click()
@@ -135,9 +135,9 @@ async function sendTemplate(hotKay) {
             }).then(async () => {
                 await waitForElemente('search-panel input[aria-owns]').then(async (searchInput) => {
                     searchInput.value = hotKay
-                    document.execCommand('insertText', false, ' ')                    
+                    document.execCommand('insertText', false, ' ')
                 })
-                
+
             }).then(async () => {
                 console.log('VEIO ATÉ AQUI')
                 await waitForElemente('dynamic-component[class*="dynamic-item"]:nth-child(1)').then(async (matchCR) => {
@@ -150,5 +150,5 @@ async function sendTemplate(hotKay) {
 }
 
 setLanguage('Portuguese (Brazil)').then(() => {
-  sendTemplate('ts as resched1')
+    sendTemplate('ts as resched1')
 })
