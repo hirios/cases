@@ -64,7 +64,8 @@ async function sendTemplate(hotKay) {
                 })
                 
             }).then(async () => {
-                await waitForElemente('dynamic-component[class*="dynamic-item"]').then(async (matchCR) => {
+                console.log('VEIO ATÉ AQUI')
+                await waitForElemente('dynamic-component[class*="dynamic-item"]:nth-child(1)').then(async (matchCR) => {
                     matchCR.click()
                 })
             })
@@ -73,7 +74,6 @@ async function sendTemplate(hotKay) {
 
 }
 
-
 setLanguage('Portuguese (Brazil)').then(() => {
-  sendTemplate('ts as new')
+  sendTemplate('ts as resched1')
 })
