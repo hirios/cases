@@ -1,4 +1,4 @@
-const emailList = [
+var emailList = [
     '-',
     'NRP - SO - IN Not Reachable ',
     'New - Confirmation Email',
@@ -25,7 +25,7 @@ const emailList = [
     'SO - Verification Not Needed',
   ];
   
-  const hotkeystr = [
+  var hotkeystr = [
     '-',
     'ts no res',
     'ts as new',
@@ -52,7 +52,7 @@ const emailList = [
     'ts so vnn',
   ];
 
-const verboseCase = true
+var verboseCase = true
 
 function getSubstatus() {
     let lastCase = Array.from(document.querySelectorAll('case-message-view')).pop()
