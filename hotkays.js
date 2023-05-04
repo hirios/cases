@@ -52,7 +52,7 @@ var emailList = [
     'ts so vnn',
   ];
 
-var verboseCase = true
+var verboseCase = verboseCase || true
 
 function getSubstatus() {
     let lastCase = Array.from(document.querySelectorAll('case-message-view')).pop()
@@ -130,10 +130,9 @@ async function sendTemplate(hotKay) {
 
         // Remove trechos do email padrão
     }).then(async () => {
-        await waitForElemente('#email-body-content').then(async () => {
-            await sleep(500)
-            const email = document.querySelectorAll('#email-body-content');
-            email[email.length - 1].innerText = '';
+        await waitForElemente('compose-card-content-wrapper #email-body-content').then(async (email) => {
+            await sleep(1000)
+            email.innerText = '';
         })
 
         // Depois de clicado aguarda o botão do CR aparecer e clica nele
