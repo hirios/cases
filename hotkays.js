@@ -131,7 +131,7 @@ async function sendTemplate(hotKay) {
         // Remove trechos do email padrão
     }).then(async () => {
         await waitForElemente('compose-card-content-wrapper #email-body-content').then(async (email) => {
-            await sleep(1000)
+            await sleep(500)
             email.innerText = '';
         })
 
