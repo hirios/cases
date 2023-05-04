@@ -52,7 +52,7 @@ var emailList = [
     'ts so vnn',
   ];
 
-var verboseCase = verboseCase || true
+var verboseCase = true
 
 function getSubstatus() {
     let lastCase = Array.from(document.querySelectorAll('case-message-view')).pop()
