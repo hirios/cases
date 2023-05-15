@@ -56,7 +56,7 @@ var verboseCase = true
 
 function getSubstatus() {
     let lastCase = Array.from(document.querySelectorAll('case-message-view')).pop()
-    let allBolds = Array.from(lastCase.querySelector('div[class^="message-body-panel"]').querySelectorAll('b'))
+    let allBolds = Array.from(lastCase.querySelector('div[class^="message-body-panel"]').querySelectorAll('b, strong'))
     let elementSubstatus = allBolds.filter(function(bold) {
         return bold.innerText.includes('Substatus:')
     })
