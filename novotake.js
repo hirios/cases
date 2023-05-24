@@ -66,7 +66,7 @@ async function sleep(ms) {
 }
 
 function g_Appointment() {
-    let dateTime = Array.from(document.querySelectorAll('cuf-form-field')).filter(function (e) { return e.innerText.includes('Time') })[0].querySelector('[debug-id="html-value"]').innerText
+    let dateTime = Array.from(document.querySelectorAll('cuf-form-field')).filter(function (e) { return e.innerText.includes('Appointment Time') })[0].querySelector('[debug-id="html-value"]').innerText
     dateTime = new Date(dateTime)
     let date = dateTime.toLocaleDateString()
     let time = dateTime.toLocaleTimeString().split(':').slice(0, 2).join(':')
