@@ -36,26 +36,28 @@ async function waitForElemente(selector) {
 
 async function waitChanged(target, index = 0) {
     return new Promise(resolve => {
-        // let target = document.querySelectorAll(selector)[index];
+
         try {
             target.querySelector('ng-template').click()
-        } catch (e) {}
+        } catch (e) { }
 
-        if (!target.innerText.includes('*')) {
-            print('[+++] DESOCULTADO')
+        if (!target.innerText.includes('*') && target.innerText != 'Phone') {
+            print('[+++] DESOCULTADO ETAPA I')
             resolve(target.innerText)
         }
 
         let observer = new MutationObserver(function (mutations) {
-            if (target.innerText.includes('*')) {
+            if (target.innerText.includes('*') || target.innerText === 'Phone') {
                 print('[+++] INFORMAÇÃO DE CONTATO ESTÁ OCULTA')
                 return observer.observe(target, config);
+
             } else {
-                print('[+++] DESOCULTADO')
+                print('[+++] DESOCULTADO ETAPA II')
                 resolve(target.innerText)
                 observer.disconnect();
             }
         });
+
         let config = { childList: true };
         observer.observe(target, config);
     })
@@ -79,7 +81,7 @@ function g_getTasks() {
     return allTasks.join(', ')
 }
 
-async function technicalSolutions () {
+async function technicalSolutions() {
     await waitForElemente('[buttoncontent][class*="address"]').then((from) => {
         from.click()
         waitForElemente('[id="email-address-id--technical-solutions@google.com"]').then((solutions) => {
@@ -90,13 +92,13 @@ async function technicalSolutions () {
 
 async function setEmails(email_to, email_cc) {
     let button_show_CC_and_BCC = document.querySelector('editor [aria-label="Show CC and BCC fields"]')
-    if (button_show_CC_and_BCC) {button_show_CC_and_BCC.click()}
-    else {print('[---] BOTÃO SHOW CC / BCC NÃO DISPONÍVEL')}
-    
+    if (button_show_CC_and_BCC) { button_show_CC_and_BCC.click() }
+    else { print('[---] BOTÃO SHOW CC / BCC NÃO DISPONÍVEL') }
+
     let buttons_remove_emails = document.querySelectorAll('[aria-label*="Remove"][aria-label*="user"]')
-    if (buttons_remove_emails) {buttons_remove_emails.forEach((e) => e.click())}
-    else {print('[---] BOTÕES DE REMOVER ENDEREÇOS DE EMAIL PADRÃO NÃO DISPONÍVEL')}
-    
+    if (buttons_remove_emails) { buttons_remove_emails.forEach((e) => e.click()) }
+    else { print('[---] BOTÕES DE REMOVER ENDEREÇOS DE EMAIL PADRÃO NÃO DISPONÍVEL') }
+
     var emailsFields = document.querySelectorAll('email-address-input')
     var emailTo = emailsFields[0].querySelector('input')
     var emailCC = emailsFields[1].querySelector('input')
@@ -126,10 +128,10 @@ function myCase() {
 function saveDraft() {
     print('[+++] SALVANDO RASCUNHO')
     Array.from(document.querySelectorAll('[contenteditable="true"]')).filter(function (e) {
-      return e.matches('[aria-label="Email body"]')
+        return e.matches('[aria-label="Email body"]')
     })[0].focus()
     document.execCommand('insertText', false, ' ')
-  }
+}
 
 // CLICA NO OVERVIEW
 document.querySelector('[aria-controls="read-card-tab-panel-home"]').click()
@@ -155,19 +157,47 @@ waitForElemente('[aria-label="Overview"].selected').then(() => {
     print('[+++] TENTANDO CAPTURAR EMAIL E TELEFONE DO CLIENTE')
     let g_pii_values = document.querySelectorAll('cuf-form-field pii-value')
 
+
     if (g_pii_values.length > 0 && g_pii_values[0].innerText) {
+        // VERIFICAÇÃO DO ELEMENTO DE EMAIL
         g_emailElement = g_pii_values[0].innerText.includes('@') ? g_pii_values[0] : undefined
-        waitChanged(g_emailElement).then((info) => {
-            g_clientEmail = info
-        })
+
+        if (g_emailElement) {
+            waitChanged(g_emailElement).then((info) => {
+                g_clientEmail = info
+            })
+        }
+
+        // CASO O PRIMEIRO ELEMENTO DE PII SEJA UM TELEFONE
+        if (g_pii_values[0].innerText === 'Phone') {
+            g_phoneElement = g_pii_values[0]
+            waitChanged(g_phoneElement).then((info) => {
+                g_clientPhone = info.replace(' ', '')
+            })
+        }
     }
 
+
     if (g_pii_values.length > 1 && g_pii_values[1].innerText) {
+        // VERIFICAÇÃO DO ELEMENTO DE TELEFONE
         g_phoneElement = g_pii_values[1].innerText.includes('+') ? g_pii_values[1] : undefined
-        waitChanged(g_phoneElement).then((info) => {
-            g_clientPhone = info.replace(' ', '')
-        })
+
+        if (g_phoneElement) {
+            waitChanged(g_phoneElement).then((info) => {
+                g_clientPhone = info.replace(' ', '')
+            })
+        }
     }
+
+
+
+    // if (!g_emailElement) {
+    //     print('[---] ELEMENTO DE EMAIL NÃO ENCONTRADO')
+    // }
+
+    // if (!g_phoneElement) {
+    //     print('[---] ELEMENTO DE TELEFONE NÃO ENCONTRADO')
+    // }
 })
 
 async function mainTake() {
