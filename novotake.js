@@ -127,6 +127,69 @@ function saveDraft() {
     document.execCommand('insertText', false, ' ')
 }
 
+async function setLanguage(language) {
+    print('[+] Setando linguagem...');
+    let outFocus = document.querySelector('[aria-label="Locale"]').dispatchEvent(new Event('focus', { bubbles: true }));
+    if (outFocus) {
+        print('[+] Case Languge setado focus')
+        print('[+] Aguardando opções de linguagens');
+        await waitForElemente('[aria-label="Locale"] material-select-dropdown-item ~ material-select-dropdown-item').then(async () => {
+            let option = Array.from(document.querySelectorAll('material-select-dropdown-item')).find(e => e.innerHTML.includes(language));
+            if (option) {
+                option.click();
+                await sleep(1000).then(function () {
+                    if (document.querySelector('[aria-label="Locale"]').value === language) {
+                        print('[+] Linguagem setada com sucesso')
+                    }
+                    else {
+                        print('[-] Error ao setar linguagem')
+                        throw new Error('[-] Error ao setar linguagem');
+                    }
+                })
+            }
+        })
+    };
+}
+
+async function sendTemplate(hotKay) {
+    let menu = document.querySelector('[role="menu"]') || document.querySelector('[aria-label="Create a write card"]')
+    menu.dispatchEvent(new Event('focus', { 'bubbles': true }))
+
+    // Aguara o botão de criar email aparecer e faz o clique
+    await waitForElemente('[aria-label="Create new email"]').then(async (botaoEmail) => {
+        botaoEmail.click()
+
+        // Remove trechos do email padrão
+    }).then(async () => {
+        await waitForElemente('compose-card-content-wrapper #email-body-content').then(async (email) => {
+            await sleep(500)
+            email.innerText = '';
+        })
+
+        // Depois de clicado aguarda o botão do CR aparecer e clica nele
+    }).then(async () => {
+        await waitForElemente('[aria-label="Insert canned response"][role="button"][animated="true"][aria-disabled="false"]').then(async (botaoCR) => {
+            botaoCR.click()
+
+        }).then(async () => {
+            await waitForElemente('search-panel[debug-id="search-panel"] input').then(async (searchElement) => {
+                searchElement.click()
+
+            }).then(async () => {
+                await waitForElemente('search-panel input[aria-owns]').then(async (searchInput) => {
+                    searchInput.value = hotKay
+                    document.execCommand('insertText', false, ' ')
+                })
+
+            }).then(async () => {
+                await waitForElemente('dynamic-component[class*="dynamic-item"]:nth-child(1)').then(async (matchCR) => {
+                    matchCR.click()
+                })
+            })
+        })
+    })
+
+}
 
 async function mainTake() {
     let menu = document.querySelector('[role="menu"]') || document.querySelector('[aria-label="Create a write card"]')
@@ -153,7 +216,6 @@ async function mainTake() {
     })
 }
 
-
 // CLICA NO OVERVIEW
 document.querySelector('[aria-controls="read-card-tab-panel-home"]').click()
 var g_accountStrategist = ''
@@ -175,41 +237,41 @@ var g_accountStrategist = document.querySelector('internal-user-info div div[cla
 // -----------------------------------------------------------------------
 // Auarda clicar no Owerview
 
-await waitForElemente('[aria-label="Overview"].selected')
-print('[+++] TENTANDO CAPTURAR EMAIL E TELEFONE DO CLIENTE')
-
-try {
-    g_clientEmail = Array.from(document.querySelectorAll('home-card-content-wrapper pii-value')).filter((e) => { if (e.innerText.includes('@') && !e.innerText.includes('@google.com') && !e.innerText.includes('*')) { return e } }).pop().innerText
-} catch (e) { }
-try {
+waitForElemente('[aria-label="Overview"].selected').then(async() => {
+    print('[+++] TENTANDO CAPTURAR EMAIL E TELEFONE DO CLIENTE')
+    try {
+        g_clientEmail = Array.from(document.querySelectorAll('home-card-content-wrapper pii-value')).filter((e) => { if (e.innerText.includes('@') && !e.innerText.includes('@google.com') && !e.innerText.includes('*')) { return e } }).pop().innerText
+    } catch (e) { }
+    try {
+        if (!g_clientEmail) {
+            g_clientEmail = document.querySelector('other-contacts [debug-id="details"] div[class*="email"]').innerText
+        }
+    } catch (e) { }
+    try {
+        g_clientPhone = Array.from(document.querySelectorAll('home-card-content-wrapper pii-value')).filter((e) => { if (e.innerText.includes('+') && !e.innerText.includes('@') && !e.innerText.includes('*')) { return e } }).pop().innerText
+    } catch (e) { }
+    
     if (!g_clientEmail) {
-        g_clientEmail = document.querySelector('other-contacts [debug-id="details"] div[class*="email"]').innerText
-    }
-} catch (e) { }
-try {
-    g_clientPhone = Array.from(document.querySelectorAll('home-card-content-wrapper pii-value')).filter((e) => { if (e.innerText.includes('+') && !e.innerText.includes('@') && !e.innerText.includes('*')) { return e } }).pop().innerText
-} catch (e) { }
-
-if (!g_clientEmail) {
-    let g_emailElement = document.querySelector('home-card-content-wrapper [aria-label="View hidden email address"]') || document.querySelector('account-field [aria-label="View hidden email address"]')
-    if (g_emailElement) {
-        g_emailElement = g_emailElement.parentElement
-        waitChanged(g_emailElement).then((info) => {
-            g_clientEmail = info
-        })
-    }
-}
-
-if (!g_clientPhone || g_clientPhone.includes('class="field"')) {
-    let g_phoneElement = document.querySelector('[aria-label="View hidden phone number"]')
-    if (g_phoneElement) {
-        g_phoneElement = g_phoneElement.parentElement
-        if (g_phoneElement) {
-            waitChanged(g_phoneElement).then((info) => {
-                g_clientPhone = info.replace(' ', '')
+        let g_emailElement = document.querySelector('home-card-content-wrapper [aria-label="View hidden email address"]') || document.querySelector('account-field [aria-label="View hidden email address"]')
+        if (g_emailElement) {
+            g_emailElement = g_emailElement.parentElement
+            waitChanged(g_emailElement).then((info) => {
+                g_clientEmail = info
             })
         }
     }
-}
+    
+    if (!g_clientPhone || g_clientPhone.includes('class="field"')) {
+        let g_phoneElement = document.querySelector('[aria-label="View hidden phone number"]')
+        if (g_phoneElement) {
+            g_phoneElement = g_phoneElement.parentElement
+            if (g_phoneElement) {
+                waitChanged(g_phoneElement).then((info) => {
+                    g_clientPhone = info.replace(' ', '')
+                })
+            }
+        }
+    }
+})
 
 mainTake()
