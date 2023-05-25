@@ -38,7 +38,7 @@ async function waitChanged(target, index = 0) {
     return new Promise(resolve => {
 
         try {
-            target.querySelector('ng-template').click()
+            target.querySelector('[debugid="unmask-button"]').click()
         } catch (e) { }
 
         if (!target.innerText.includes('*') && target.innerText != 'Phone') {
@@ -103,12 +103,6 @@ async function setEmails(email_to, email_cc) {
     var emailTo = emailsFields[0].querySelector('input')
     var emailCC = emailsFields[1].querySelector('input')
 
-    if (emailTo && emailCC) {
-        print('[+++] ELEMENTOS DE INPUT ENCONTRADOS')
-    } else {
-        print('[---] INPUTS NÃO ENCONTRADOS ')
-    }
-
     emailTo.focus()
     emailTo.value = email_to
     document.execCommand('insertText', false, ' ')
@@ -133,72 +127,6 @@ function saveDraft() {
     document.execCommand('insertText', false, ' ')
 }
 
-// CLICA NO OVERVIEW
-document.querySelector('[aria-controls="read-card-tab-panel-home"]').click()
-
-var g_accountStrategist = ''
-var g_clientEmail = ''
-var g_appointment = '<span class="field">{HORARIO}</span>'
-var g_tasks = '<span class="field">{TASKS}</span>'
-var g_caseID = '<span class="field">{WEBSITE}</span>'
-var g_clientName = '<span class="field">{NOME DO CLIENTE}</span>'
-var g_website = '<span class="field">{SITE}</span>'
-var g_clientPhone = '<span class="field">{TELEFONE}</span>'
-
-var g_appointment = g_Appointment()
-var g_tasks = g_getTasks()
-var g_caseID = document.querySelector('[src="https://pulse-tracker.corp.google.com/tracking_script.js"]').getAttribute('data-case-id')
-var g_clientName = document.querySelector('title').innerText.split(' ')[1]
-var g_website = document.querySelector('ng-template > [href*="https://www.google.com/url?q="]').innerText
-var g_accountStrategist = document.querySelector('internal-user-info div div[class*="email"]').innerText
-
-// AGUARDA O OVERVIEW SER SELECIONADO
-waitForElemente('[aria-label="Overview"].selected').then(() => {
-    print('[+++] TENTANDO CAPTURAR EMAIL E TELEFONE DO CLIENTE')
-    let g_pii_values = document.querySelectorAll('cuf-form-field pii-value')
-
-
-    if (g_pii_values.length > 0 && g_pii_values[0].innerText) {
-        // VERIFICAÇÃO DO ELEMENTO DE EMAIL
-        g_emailElement = g_pii_values[0].innerText.includes('@') ? g_pii_values[0] : undefined
-
-        if (g_emailElement) {
-            waitChanged(g_emailElement).then((info) => {
-                g_clientEmail = info
-            })
-        }
-
-        // CASO O PRIMEIRO ELEMENTO DE PII SEJA UM TELEFONE
-        if (g_pii_values[0].innerText === 'Phone') {
-            g_phoneElement = g_pii_values[0]
-            waitChanged(g_phoneElement).then((info) => {
-                g_clientPhone = info.replace(' ', '')
-            })
-        }
-    }
-
-
-    if (g_pii_values.length > 1 && g_pii_values[1].innerText) {
-        // VERIFICAÇÃO DO ELEMENTO DE TELEFONE
-        g_phoneElement = g_pii_values[1].innerText.includes('+') ? g_pii_values[1] : undefined
-
-        if (g_phoneElement) {
-            waitChanged(g_phoneElement).then((info) => {
-                g_clientPhone = info.replace(' ', '')
-            })
-        }
-    }
-
-
-
-    // if (!g_emailElement) {
-    //     print('[---] ELEMENTO DE EMAIL NÃO ENCONTRADO')
-    // }
-
-    // if (!g_phoneElement) {
-    //     print('[---] ELEMENTO DE TELEFONE NÃO ENCONTRADO')
-    // }
-})
 
 async function mainTake() {
     let menu = document.querySelector('[role="menu"]') || document.querySelector('[aria-label="Create a write card"]')
@@ -223,6 +151,65 @@ async function mainTake() {
             saveDraft()
         })
     })
+}
+
+
+// CLICA NO OVERVIEW
+document.querySelector('[aria-controls="read-card-tab-panel-home"]').click()
+var g_accountStrategist = ''
+var g_clientEmail = ''
+var g_appointment = '<span class="field">{HORARIO}</span>'
+var g_tasks = '<span class="field">{TASKS}</span>'
+var g_caseID = '<span class="field">{WEBSITE}</span>'
+var g_clientName = '<span class="field">{NOME DO CLIENTE}</span>'
+var g_website = '<span class="field">{SITE}</span>'
+var g_clientPhone = '<span class="field">{TELEFONE}</span>'
+
+var g_appointment = g_Appointment()
+var g_tasks = g_getTasks()
+var g_caseID = document.querySelector('[src="https://pulse-tracker.corp.google.com/tracking_script.js"]').getAttribute('data-case-id')
+var g_clientName = document.querySelector('title').innerText.split(' ')[1]
+var g_website = document.querySelector('ng-template > [href*="https://www.google.com/url?q="]').innerText
+var g_accountStrategist = document.querySelector('internal-user-info div div[class*="email"]').innerText
+
+// -----------------------------------------------------------------------
+// Auarda clicar no Owerview
+
+await waitForElemente('[aria-label="Overview"].selected')
+print('[+++] TENTANDO CAPTURAR EMAIL E TELEFONE DO CLIENTE')
+
+try {
+    g_clientEmail = Array.from(document.querySelectorAll('home-card-content-wrapper pii-value')).filter((e) => { if (e.innerText.includes('@') && !e.innerText.includes('@google.com') && !e.innerText.includes('*')) { return e } }).pop().innerText
+} catch (e) { }
+try {
+    if (!g_clientEmail) {
+        g_clientEmail = document.querySelector('other-contacts [debug-id="details"] div[class*="email"]').innerText
+    }
+} catch (e) { }
+try {
+    g_clientPhone = Array.from(document.querySelectorAll('home-card-content-wrapper pii-value')).filter((e) => { if (e.innerText.includes('+') && !e.innerText.includes('@') && !e.innerText.includes('*')) { return e } }).pop().innerText
+} catch (e) { }
+
+if (!g_clientEmail) {
+    let g_emailElement = document.querySelector('home-card-content-wrapper [aria-label="View hidden email address"]') || document.querySelector('account-field [aria-label="View hidden email address"]')
+    if (g_emailElement) {
+        g_emailElement = g_emailElement.parentElement
+        waitChanged(g_emailElement).then((info) => {
+            g_clientEmail = info
+        })
+    }
+}
+
+if (!g_clientPhone || g_clientPhone.includes('class="field"')) {
+    let g_phoneElement = document.querySelector('[aria-label="View hidden phone number"]')
+    if (g_phoneElement) {
+        g_phoneElement = g_phoneElement.parentElement
+        if (g_phoneElement) {
+            waitChanged(g_phoneElement).then((info) => {
+                g_clientPhone = info.replace(' ', '')
+            })
+        }
+    }
 }
 
 mainTake()
