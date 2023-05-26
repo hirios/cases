@@ -155,7 +155,7 @@ async function technicalSolutions() {
 }
 
 async function setEmails(email_to, email_cc) {
-    let button_show_CC_and_BCC = document.querySelector('editor [aria-label="Show CC and BCC fields"]')
+    let button_show_CC_and_BCC = document.querySelector('compose-card-content-wrapper [aria-label="Show CC and BCC fields"]')
     if (button_show_CC_and_BCC) { button_show_CC_and_BCC.click() }
     else { print('[---] BOTÃO SHOW CC / BCC NÃO DISPONÍVEL') }
 
