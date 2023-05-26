@@ -98,10 +98,11 @@ async function sendTemplate(hotKay) {
     // Aguara o botão de criar email aparecer e faz o clique
     await waitForElemente('[aria-label="Create new email"]').then(async (botaoEmail) => {
         botaoEmail.click()
-
+        
         // Remove trechos do email padrão
     }).then(async () => {
         await waitForElemente('compose-card-content-wrapper #email-body-content').then(async (email) => {
+            await technicalSolutions()
             await sleep(500)
             email.innerText = '';
         })
