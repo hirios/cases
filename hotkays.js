@@ -121,7 +121,7 @@ async function setLanguage(language) {
 }
 
 async function sendTemplate(hotKay) {
-    let menu = document.querySelector('[role="menu"]') || document.querySelector('[aria-label="Create a write card"]')
+    let menu = document.querySelector('[aria-label="Create a write card"]')
     menu.dispatchEvent(new Event('focus', { 'bubbles': true }))
 
     // Aguara o botão de criar email aparecer e faz o clique
@@ -131,7 +131,7 @@ async function sendTemplate(hotKay) {
         // Remove trechos do email padrão
     }).then(async () => {
         await waitForElemente('compose-card-content-wrapper #email-body-content').then(async (email) => {
-            await sleep(500)
+            await sleep(200)
             email.innerText = '';
         })
 
