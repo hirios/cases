@@ -218,10 +218,10 @@ async function mainTake() {
     })
 }
 
-
-var progam = Array.from(document.querySelectorAll('cuf-form-field sanitized-content')).filter((e) => {return e.innerText.includes('pka')}).pop()
-if (progam) {
-  progam.style.background = 'red'
+var program = undefined
+var program = Array.from(document.querySelectorAll('cuf-form-field sanitized-content')).filter((e) => {return e.innerText.includes('pka')}).pop()
+if (program) {
+  program.style.background = 'red'
 }
 
 // CLICA NO OVERVIEW
@@ -242,7 +242,11 @@ try {
     var g_caseID = document.querySelector('[src="https://pulse-tracker.corp.google.com/tracking_script.js"]').getAttribute('data-case-id')
     var g_clientName = document.querySelector('title').innerText.split(' ')[1]
     var g_website = document.querySelector('ng-template > [href*="https://www.google.com/url?q="]').innerText
-    var g_accountStrategist = document.querySelector('internal-user-info div div[class*="email"]').innerText
+
+    if (!progam) {
+      var g_accountStrategist = document.querySelector('internal-user-info div div[class*="email"]').innerText
+    }
+    
     
     // -----------------------------------------------------------------------
     // Auarda clicar no Owerview
