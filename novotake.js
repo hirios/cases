@@ -243,7 +243,7 @@ try {
     var g_clientName = document.querySelector('title').innerText.split(' ')[1]
     var g_website = document.querySelector('ng-template > [href*="https://www.google.com/url?q="]').innerText
 
-    if (!progam) {
+    if (!program) {
       var g_accountStrategist = document.querySelector('internal-user-info div div[class*="email"]').innerText
     }
     
