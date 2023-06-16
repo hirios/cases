@@ -218,6 +218,12 @@ async function mainTake() {
     })
 }
 
+
+var progam = Array.from(document.querySelectorAll('cuf-form-field sanitized-content')).filter((e) => {return e.innerText.includes('pka')}).pop()
+if (progam) {
+  progam.style.background = 'red'
+}
+
 // CLICA NO OVERVIEW
 document.querySelector('[aria-controls="read-card-tab-panel-home"]').click()
 var g_accountStrategist = ''
