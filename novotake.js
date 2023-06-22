@@ -292,6 +292,6 @@ try {
     
 } catch (e) {
     setLanguage('Portuguese (Brazil)').then(() => {
-        sendTemplate('ts as new')
+        sendTemplate('ts as new dfa')
     })
 }
