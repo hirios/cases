@@ -69,7 +69,8 @@ async function sleep(ms) {
 
 async function setLanguage(language) {
     print('[+++] Setando linguagem...');
-    let outFocus = document.querySelector('[aria-label="Locale"]').dispatchEvent(new Event('focus', { bubbles: true }));
+    let localeElement = document.querySelector('[aria-label="Locale"]')
+    let outFocus = localeElement.dispatchEvent(new Event('focus', { bubbles: true }));
     if (outFocus) {
         print('[+++] Case Languge setado focus')
         print('[+++] Aguardando opções de linguagens');
@@ -77,6 +78,7 @@ async function setLanguage(language) {
             let option = Array.from(document.querySelectorAll('material-select-dropdown-item')).find(e => e.innerHTML.includes(language));
             if (option) {
                 option.click();
+                localeElement.dispatchEvent(new Event('blur', { bubbles: true }));
                 await sleep(1000).then(function () {
                     if (document.querySelector('[aria-label="Locale"]').value === language) {
                         print('[+++] Linguagem setada com sucesso')
@@ -98,7 +100,7 @@ async function sendTemplate(hotKay) {
     // Aguara o botão de criar email aparecer e faz o clique
     await waitForElemente('[aria-label="Create new email"]').then(async (botaoEmail) => {
         botaoEmail.click()
-        
+
         // Remove trechos do email padrão
     }).then(async () => {
         await waitForElemente('compose-card-content-wrapper #email-body-content').then(async (email) => {
@@ -133,17 +135,29 @@ async function sendTemplate(hotKay) {
 }
 
 function g_Appointment() {
-    let dateTime = Array.from(document.querySelectorAll('cuf-form-field')).filter(function (e) { return e.innerText.includes('Appointment Time') })[0].querySelector('[debug-id="html-value"]').innerText
-    dateTime = new Date(dateTime)
-    let date = dateTime.toLocaleDateString()
-    let time = dateTime.toLocaleTimeString().split(':').slice(0, 2).join(':')
-    return `${date} às ${time}`
+    try {
+        let dateTime = Array.from(document.querySelectorAll('cuf-form-field')).filter(function (e) { return e.innerText.includes('Appointment Time') })[0].querySelector('[debug-id="html-value"]').innerText
+        dateTime = new Date(dateTime)
+        let date = dateTime.toLocaleDateString()
+        let time = dateTime.toLocaleTimeString().split(':').slice(0, 2).join(':')
+        return `${date} às ${time}`
+    } catch(e) {
+        print('[---] ' + e)
+        return g_appointment
+    }
+
 }
 
 function g_getTasks() {
-    let tasksElement = Array.from(document.querySelectorAll('cuf-form-field')).filter(function (e) { return e.innerText.includes('Tasks') })[0]
-    let allTasks = Array.from(tasksElement.querySelectorAll('[debug-id="html-value"]')).map(x => x.innerText)
-    return allTasks.join(', ')
+    try {
+        let tasksElement = Array.from(document.querySelectorAll('cuf-form-field')).filter(function (e) { return e.innerText.includes('Tasks') })[0]
+        let allTasks = Array.from(tasksElement.querySelectorAll('[debug-id="html-value"]')).map(x => x.innerText)
+        return allTasks.join(', ')
+    }
+    catch(e) {
+        print('[---] ' + e)
+        return g_tasks
+    }
 }
 
 async function technicalSolutions() {
@@ -219,9 +233,9 @@ async function mainTake() {
 }
 
 var program = undefined
-var program = Array.from(document.querySelectorAll('cuf-form-field sanitized-content')).filter((e) => {return e.innerText.includes('pka')}).pop()
+var program = Array.from(document.querySelectorAll('cuf-form-field sanitized-content')).filter((e) => { return e.innerText.includes('pka') }).pop()
 if (program) {
-  program.style.background = 'red'
+    program.style.background = 'red'
 }
 
 // CLICA NO OVERVIEW
@@ -235,23 +249,29 @@ var g_clientName = '<span class="field">{NOME DO CLIENTE}</span>'
 var g_website = '<span class="field">{SITE}</span>'
 var g_clientPhone = '<span class="field">{TELEFONE}</span>'
 
-try {
 
+var g_typeCase = document.querySelector('[debug-id="contact-reason-header"]').innerText
+
+if (g_typeCase === 'Submitted internally') {
     var g_appointment = g_Appointment()
     var g_tasks = g_getTasks()
-    var g_caseID = document.querySelector('[src="https://pulse-tracker.corp.google.com/tracking_script.js"]').getAttribute('data-case-id')
+
+    var g_caseID_teste = document.querySelector('[src="https://pulse-tracker.corp.google.com/tracking_script.js"]')
+    var g_caseID = g_caseID_teste ? g_caseID_teste.getAttribute('data-case-id') : g_caseID
+
     var g_clientName = document.querySelector('title').innerText.split(' ')[1]
-    var g_website = document.querySelector('ng-template > [href*="https://www.google.com/url?q="]').innerText
+
+    var g_website_teste = document.querySelector('ng-template > [href*="https://www.google.com"], ng-template > [href*="http://www.google.com"]')
+    var g_website = g_website_teste ? g_website_teste.innerText : g_website
 
     if (!program) {
-      var g_accountStrategist = document.querySelector('internal-user-info div div[class*="email"]').innerText
+        var g_accountStrategist = document.querySelector('internal-user-info div div[class*="email"]').innerText
     }
-    
-    
+
     // -----------------------------------------------------------------------
     // Auarda clicar no Owerview
-    
-    waitForElemente('[aria-label="Overview"].selected').then(async() => {
+
+    waitForElemente('[aria-label="Overview"].selected').then(async () => {
         print('[+++] TENTANDO CAPTURAR EMAIL E TELEFONE DO CLIENTE')
         try {
             g_clientEmail = Array.from(document.querySelectorAll('home-card-content-wrapper pii-value')).filter((e) => { if (e.innerText.includes('@') && !e.innerText.includes('@google.com') && !e.innerText.includes('*')) { return e } }).pop().innerText
@@ -264,7 +284,7 @@ try {
         try {
             g_clientPhone = Array.from(document.querySelectorAll('home-card-content-wrapper pii-value')).filter((e) => { if (e.innerText.includes('+') && !e.innerText.includes('@') && !e.innerText.includes('*')) { return e } }).pop().innerText
         } catch (e) { }
-        
+
         if (!g_clientEmail) {
             let g_emailElement = document.querySelector('home-card-content-wrapper [aria-label="View hidden email address"]') || document.querySelector('account-field [aria-label="View hidden email address"]')
             if (g_emailElement) {
@@ -274,7 +294,7 @@ try {
                 })
             }
         }
-        
+
         if (!g_clientPhone || g_clientPhone.includes('class="field"')) {
             let g_phoneElement = document.querySelector('[aria-label="View hidden phone number"]')
             if (g_phoneElement) {
@@ -287,10 +307,9 @@ try {
             }
         }
     })
-    
+
     mainTake()
-    
-} catch (e) {
+} else {
     setLanguage('Portuguese (Brazil)').then(() => {
         sendTemplate('ts as new dfa')
     })
