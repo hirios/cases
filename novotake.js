@@ -1,5 +1,6 @@
 console.clear()
 var verboseCase = true
+document.querySelector('[aria-label="Navigate to home page"]').style.backgroundColor = 'red'
 
 function print(string) {
   if (verboseCase) {
