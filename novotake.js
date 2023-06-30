@@ -42,9 +42,13 @@ async function sleep(ms) {
 
 async function setLanguage(language) {
   print('[+++] Setando linguagem...');
+  
   let localeElement = document.querySelector('[aria-label="Locale"]')
-  let outFocus = localeElement.dispatchEvent(new Event('focus', { bubbles: true }));
+  if(localeElement.value === 'Portuguese (Brazil)' ){
+    return
+  }
 
+  let outFocus = localeElement.dispatchEvent(new Event('focus', { bubbles: true }));
   if (outFocus) {
     print('[+++] Case Languge setado focus')
     print('[+++] Aguardando opções de linguagens');
