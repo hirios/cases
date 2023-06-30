@@ -71,14 +71,20 @@ async function setLanguage(language) {
     print('[+++] Setando linguagem...');
     let localeElement = document.querySelector('[aria-label="Locale"]')
     let outFocus = localeElement.dispatchEvent(new Event('focus', { bubbles: true }));
+
     if (outFocus) {
         print('[+++] Case Languge setado focus')
         print('[+++] Aguardando opções de linguagens');
+        
         await waitForElemente('[aria-label="Locale"] material-select-dropdown-item ~ material-select-dropdown-item').then(async () => {
             let option = Array.from(document.querySelectorAll('material-select-dropdown-item')).find(e => e.innerHTML.includes(language));
+            
             if (option) {
                 option.click();
+                // Remove focus on locale
                 localeElement.dispatchEvent(new Event('blur', { bubbles: true }));
+                document.querySelector('input').dispatchEvent(new Event('focus', { bubbles: true }));
+
                 await sleep(1000).then(function () {
                     if (document.querySelector('[aria-label="Locale"]').value === language) {
                         print('[+++] Linguagem setada com sucesso')
