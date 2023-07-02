@@ -1,6 +1,5 @@
 console.clear()
 var verboseCase = true
-document.querySelector('[aria-label="Navigate to home page"]').style.backgroundColor = 'blue'
 
 function print(string) {
   if (verboseCase) {
@@ -12,15 +11,21 @@ function print(string) {
   }
 }
 
-async function waitForElemente(selector) {
+async function waitForElemente(selector, lastCard = false) {
+  let element = document
+
+  if (lastCard) {
+    element = lastEmailCard()
+  }
+
   return new Promise(resolve => {
-    if (document.querySelector(selector)) {
-      return resolve(document.querySelector(selector));
+    if (element.querySelector(selector)) {
+      return resolve(element.querySelector(selector));
     }
 
     const observer = new MutationObserver(mutations => {
-      if (document.querySelector(selector)) {
-        resolve(document.querySelector(selector));
+      if (element.querySelector(selector)) {
+        resolve(element.querySelector(selector));
         observer.disconnect();
       }
     }
@@ -35,16 +40,15 @@ async function waitForElemente(selector) {
   );
 }
 
-
 async function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function setLanguage(language) {
   print('[+++] Setando linguagem...');
-  
+
   let localeElement = document.querySelector('[aria-label="Locale"]')
-  if(localeElement.value === 'Portuguese (Brazil)' ){
+  if (localeElement.value === 'Portuguese (Brazil)') {
     return
   }
 
@@ -62,7 +66,7 @@ async function setLanguage(language) {
         localeElement.dispatchEvent(new Event('blur', { bubbles: true }));
         document.querySelector('input').dispatchEvent(new Event('focus', { bubbles: true }));
 
-        await sleep(1000).then(function () {
+        sleep(1000).then(function () {
           if (document.querySelector('[aria-label="Locale"]').value === language) {
             print('[+++] Linguagem setada com sucesso')
           }
@@ -77,43 +81,43 @@ async function setLanguage(language) {
 }
 
 async function sendTemplate(hotKay) {
-    let menu = document.querySelector('[aria-label="Create a write card"]')
-    menu.dispatchEvent(new Event('focus', { 'bubbles': true }))
+  let menu = document.querySelector('[aria-label="Create a write card"]')
+  menu.dispatchEvent(new Event('focus', { 'bubbles': true }))
 
-    // Aguara o botão de criar email aparecer e faz o clique
-    await waitForElemente('[aria-label="Create new email"]').then(async (botaoEmail) => {
-        botaoEmail.click()
+  // Aguarda o botão de criar email aparecer e faz o clique
+  await waitForElemente('[aria-label="Create new email"]').then(async (botaoEmail) => {
+    botaoEmail.click()
 
-        // Remove trechos do email padrão
-    }).then(async () => {
-        await waitForElemente('compose-card-content-wrapper #email-body-content').then(async (email) => {
-            await sleep(200)
-            email.innerText = '';
-        })
-
-        // Depois de clicado aguarda o botão do CR aparecer e clica nele
-    }).then(async () => {
-        await waitForElemente('[aria-label="Insert canned response"][role="button"][animated="true"][aria-disabled="false"]').then(async (botaoCR) => {
-            botaoCR.click()
-
-        }).then(async () => {
-            await waitForElemente('search-panel[debug-id="search-panel"] input').then(async (searchElement) => {
-                searchElement.click()
-
-            }).then(async () => {
-                await waitForElemente('search-panel input[aria-owns]').then(async (searchInput) => {
-                    searchInput.value = hotKay
-                    document.execCommand('insertText', false, ' ')
-                })
-
-            }).then(async () => {
-                await waitForElemente('dynamic-component[class*="dynamic-item"]:nth-child(1)').then(async (matchCR) => {
-                    matchCR.click()
-                })
-            })
-        })
+    // Remove trechos do email padrão
+  }).then(async () => {
+    await waitForElemente('#email-body-content', lastCard = true).then(async (email) => {
+      await sleep(200)
+      email.innerText = ''
+      // email.innerText = '';
     })
 
+    // Depois de clicado aguarda o botão do CR aparecer e clica nele
+  }).then(async () => {
+    await waitForElemente('[aria-label="Insert canned response"][role="button"][animated="true"][aria-disabled="false"]', lastCard = true).then(async (botaoCR) => {
+      botaoCR.click()
+
+    }).then(async () => {
+      await waitForElemente('search-panel[debug-id="search-panel"] input', lastCard = false).then(async (searchElement) => {
+        searchElement.click()
+
+      }).then(async () => {
+        await waitForElemente('search-panel input[aria-owns]', lastCard = false).then(async (searchInput) => {
+          searchInput.value = hotKay
+          document.execCommand('insertText', false, ' ')
+        })
+
+      }).then(async () => {
+        await waitForElemente('dynamic-component[class*="dynamic-item"]:nth-child(1)', lastCard = false).then(async (matchCR) => {
+          matchCR.click()
+        })
+      })
+    })
+  })
 }
 
 function g_Appointment() {
@@ -127,7 +131,6 @@ function g_Appointment() {
     print('[---] ' + e)
     return g_appointment
   }
-
 }
 
 function g_getTasks() {
@@ -142,25 +145,30 @@ function g_getTasks() {
   }
 }
 
+function lastEmailCard() {
+  return Array.from(document.querySelectorAll('compose-card-content-wrapper')).pop().parentElement.parentElement.parentElement
+}
+
 async function technicalSolutions() {
-  await waitForElemente('[buttoncontent][class*="address"]').then((from) => {
+  await waitForElemente('[buttoncontent][class*="address"]', lastCard = true).then((from) => {
     from.click()
-    waitForElemente('[id="email-address-id--technical-solutions@google.com"]').then((solutions) => {
+    waitForElemente('[id="email-address-id--technical-solutions@google.com"]', lastCard = false).then((solutions) => {
       solutions.click()
+      print('[+++] TECHNICAL SOLUTIONS EMAIL SETADO')
     })
   })
 }
 
 async function setEmails(email_to, email_cc) {
-  let button_show_CC_and_BCC = document.querySelector('compose-card-content-wrapper [aria-label="Show CC and BCC fields"]')
+  let button_show_CC_and_BCC = lastEmailCard().querySelector('[aria-label="Show CC and BCC fields"]')
   if (button_show_CC_and_BCC) { button_show_CC_and_BCC.click() }
   else { print('[---] BOTÃO SHOW CC / BCC NÃO DISPONÍVEL') }
 
-  let buttons_remove_emails = document.querySelectorAll('[aria-label*="Remove"][aria-label*="user"]')
+  let buttons_remove_emails = lastEmailCard().querySelectorAll('[aria-label*="Remove"][aria-label*="user"]')
   if (buttons_remove_emails) { buttons_remove_emails.forEach((e) => e.click()) }
   else { print('[---] BOTÕES DE REMOVER ENDEREÇOS DE EMAIL PADRÃO NÃO DISPONÍVEL') }
 
-  var emailsFields = document.querySelectorAll('email-address-input')
+  var emailsFields = lastEmailCard().querySelectorAll('email-address-input')
   var emailTo = emailsFields[0].querySelector('input')
   var emailCC = emailsFields[1].querySelector('input')
 
