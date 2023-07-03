@@ -271,7 +271,8 @@ if (g_typeCase === 'Submitted internally') {
 
     try {
       if (!g_clientPhone) {
-        g_clientPhone = Array.from(document.querySelectorAll('home-card-content-wrapper pii-value')).filter((e) => { if (e.innerText.includes('+') && !e.innerText.includes('@') && !e.innerText.includes('*')) { return e } }).pop().innerText
+        let contact = Array.from(document.querySelectorAll('cuf-form-field')).filter((e) => { return e.innerText.includes('Contact') })[0].innerText
+        g_clientPhone = '+' + contact.slice(contact.search('55')).replace(/[^\d]+/g, '')
       }
     } catch (e) {
       print('[---] ' + e)
