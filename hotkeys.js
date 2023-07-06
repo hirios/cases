@@ -1,68 +1,4 @@
-var emailList = [
-    '-',
-    'NRP - SO - IN Not Reachable ',
-    'New - Confirmation Email',
-    'AS - Work in Progress',
-    'AS - Reschedule 1',
-    'AS - Acceptable Reschedule',
-    'AS - Agent Reschedule',
-    'NI - Awaiting Inputs',
-    'NI - In Consult',
-    'NI - Awaiting Validation',
-    'NI - Attempted Contact',
-    'NI - Other',
-    'IN - Infeasible',
-    'IN - Not Reachable',
-    'IN - Not Interested',
-    'IN - Not Ready',
-    'IN - Out of Scope - Rerouted to Internal Team',
-    'IN - Out of Scope - Unable to Transfer',
-    'IN - Out of Scope - Email to Seller',
-    'IN - Other',
-    'SO - Verified',
-    'SO - Verified No Recent Conversion',
-    'SO - Unverified',
-    'SO - Verification Not Needed',
-  ];
-  
-  var hotkeystr = [
-    '-',
-    'ts no res',
-    'ts as new',
-    '-',
-    'ts as resched1',
-    'ts as reschedok',
-    'ts as reschedok',
-    'ts ni ai',
-    'ts ni ic',
-    'ts ni av',
-    'ts ni ac',
-    'ts ni oth',
-    'ts in inf',
-    'ts in nrch',
-    'ts in ni',
-    'ts in nrdy',
-    'ts in oost',
-    'ts in oosu',
-    'ts in oos seller',
-    'ts in oth',
-    'ts so verif',
-    'ts so verif nrc',
-    'ts so unv',
-    'ts so vnn',
-  ];
-
 var verboseCase = true
-
-function getSubstatus() {
-    let lastCase = Array.from(document.querySelectorAll('case-message-view')).pop()
-    let allBolds = Array.from(lastCase.querySelector('div[class^="message-body-panel"]').querySelectorAll('b, strong'))
-    let elementSubstatus = allBolds.filter(function(bold) {
-        return bold.innerText.includes('Substatus:')
-    })
-    let fullSubstatus = elementSubstatus[0].parentElement.innerText.split('Substatus:').pop().trim()
-    return hotkeystr[emailList.indexOf(fullSubstatus)]
-}
 
 function print(string) {
     if (verboseCase) {
@@ -118,7 +54,7 @@ async function setLanguage(language) {
         localeElement.dispatchEvent(new Event('blur', { bubbles: true }));
         document.querySelector('input').dispatchEvent(new Event('focus', { bubbles: true }));
 
-        await sleep(1000).then(function () {
+        sleep(1000).then(function () {
           if (document.querySelector('[aria-label="Locale"]').value === language) {
             print('[+++] Linguagem setada com sucesso')
           }
@@ -174,5 +110,5 @@ async function sendTemplate(hotKay) {
 }
 
 setLanguage('Portuguese (Brazil)').then(() => {
-    sendTemplate(getSubstatus())
+    sendTemplate('ts as new')
 })
