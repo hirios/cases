@@ -11,4 +11,6 @@ function print(string) {
   }
 }
 
-print('This is an injection test')
+print('[---] This is an injection test')
+print('[+++] This is an injection test')
+
