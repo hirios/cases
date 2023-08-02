@@ -19,16 +19,22 @@ simulateClick = e => (e.dispatchEvent(new PointerEvent("pointerdown", {
 })), !0)
 
 // Deixa o caseID clicável
+escapeHTMLPolicy = trustedTypes.createPolicy("forceInner", {
+  createHTML: (to_escape) => to_escape
+});
+
 function replaceCaseId() {
-  let textBody = document.querySelector('[data-show-working-location-actions="true"]').parentElement
+  let textBody = document.querySelector('[data-show-working-location-actions="true"]').parentElement;
   if (textBody) {
-    let caseId = document.querySelector('[data-show-working-location-actions="true"]').parentElement.innerText.split('caso ')[1].split('\n')[0]
-    let cases = `<a href="https://cases.connect.corp.google.com/#/case/${caseId}" target="_blank">${caseId}</a>`
+    let caseId = document.querySelector('[data-show-working-location-actions="true"]').parentElement.innerText.match(/\d{1}-\d{13}/g).pop();
+    let cases = `<a href="https://cases.connect.corp.google.com/#/case/${caseId}" target="_blank">${caseId}</a>`;
     if (!textBody.innerHTML.includes(cases)) {
-      textBody.innerHTML = escapeHTMLPolicy.createHTML(textBody.innerHTML.replaceAll('caso de código ' + caseId, 'caso de código ' + cases))
+      textBody.innerHTML = escapeHTMLPolicy.createHTML(textBody.innerHTML.replaceAll('Caso ' + caseId, 'Caso ' + cases));
     }
   }
 }
+
+setInterval(replaceCaseId, 500);
 
 // Verifica se o Connect Appointments está aberto
 function checkHidenAppointment() {
