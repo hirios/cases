@@ -1,0 +1,97 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        (function () {
+            var g_msg = 'El formulario se ha enviado correctamente'
+            var loop = function loop() {
+                if (!g_stoped) {
+                    g_stoped = document.body.innerText.includes(g_msg)
+                    setTimeout(function () {
+                        loop();
+                    }, 500);
+                } else {
+                    console.log('form sent');
+                    dataLayer.push({ 'event': 'formulario' });
+                    gtag('event', 'conversion', { 'send_to': 'AW-353037432/BOkWCIO8wIkYEPjYq6gB' });
+                }
+            };
+            var g_stoped = document.body.innerText.includes(g_msg)
+            loop();
+        })();
+    })
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('click', function (e) {
+            var g_element = undefined
+            var g_selector = '[class*="ctc-analytics"]'
+
+            g_element = e.target.closest(g_selector)
+
+            if (!g_element) {
+                g_element = e.target
+            }
+
+            if (g_element) {
+                if (g_element.matches(g_selector)) {
+                    console.log('Clique no whatsapp')
+                }
+            }
+        })
+    })
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('click', function (e) {
+            var g_element = undefined
+
+            if (e.target.tagName === 'A') {
+                g_element = e.target
+            }
+            else {
+                g_element = e.target.closest('a')
+            }
+            if (g_element) {
+                if (g_element.href.includes('whatsapp') || g_element.href.includes('wa.me')) {
+                    gtag('event', 'conversion', { 'send_to': 'AW-10775314419/Kfc6CLy-5JEYEPP_iJIo' });
+                    gtag('event', 'whatsapp')
+                }
+            }
+        })
+    })
+</script>
+
+<script>
+    window.GG_EC = window.GG_EC || { 'email': '', 'phone_number': '' }
+    var g_email_selector = '[id="form-field-email"], [name="email"]'
+    var g_phone_selector = '[placeholder="Celular"], [name="telefone"]'
+
+    document.addEventListener('input', function (e) {
+        var g_target = e.target
+        var g_value = e.target.value
+
+        if (g_email_selector && !(g_email_selector === '[]')) {
+            if (g_target.matches(g_email_selector)) {
+                if (g_value.match(g_emailRegex)) {
+                    window.GG_EC.email = g_value
+                }
+            }
+        }
+
+        if (g_phone_selector && !(g_phone_selector === '[]')) {
+            if (g_target.matches(g_phone_selector)) {
+                window.GG_EC.phone_number = '+55' + g_value.replace(/\D/g, '')
+            }
+        }
+    })
+
+    var g_emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+
+    document.addEventListener('submit', function (e) {
+        if (e.target.matches && e.target.matches('[class="registration-form alt"]')) {
+            console.log('Google - Form Enviado')
+            dataLayer.push({ 'event': 'form' })
+        }
+    })
+</script>
