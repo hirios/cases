@@ -154,7 +154,7 @@ async function sendTemplate(hotKay) {
             botaoCR.click()
 
         }).then(async () => {
-            await waitForElemente('search-panel[debug-id="search-panel"] input').then(async (searchElement) => {
+            await waitForElemente('search-panel[debug-id="search-panel"] input:not([aria-label*="Search"])').then(async (searchElement) => {
                 searchElement.click()
 
             }).then(async () => {
